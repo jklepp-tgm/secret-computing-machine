@@ -431,7 +431,7 @@ file contains all changes in another (a common question when files have been cop
 across file systems and edited in multiple places).
 " [3]_
 
-Example 1:
+**Example 1**
 
 FS 1 -> FS 2
 
@@ -450,7 +450,9 @@ FS 1 -> FS 2
     A_DIR
     schueler@debian:~/DezSys/GraftB$ 
 
-The warning can be ignored, it still worked.
+The warning can be ignored, the command still worked.
+
+**Example 2**
 
 FS 2 -> FS1
 
@@ -576,7 +578,7 @@ When using a checkout beforehand, the merge succeeds.
 
     [jakob@manj MyRepo2]$ ls
     TEST/ MYFILE
-    # Pull
+    # Pull here
     [jakob@manj MyRepo2]$ ori checkout 9377ef5daf032eaeb66b73c50a4e4bdcca3b4b052a7c836b05dd4affd0a54708
     Checkout success!
     [jakob@manj MyRepo2]$ ori merge 9377ef5daf032eaeb66b73c50a4e4bdcca3b4b052a7c836b05dd4affd0a54708
@@ -596,17 +598,20 @@ closer to git fetch than git pull.) [3]_
 
 This command can be used in two ways:
 
-*First*
+**First**
+
 Pulling using a full address without a ori remote add beforehand.
 
 .. code:: bash
 
-    [jakob@manj MyRepo2]$ ori pull schueler@192.168.1.26:NoRepo Pulled up to
-    714b922251dc9efc00acd9fa614dbf68995a6b9947e3bd0f1a57f24a9eebcc33
+    [jakob@manj MyRepo2]$ ori pull schueler@192.168.1.26:NoRepo
+    Pulled up to 714b922251dc9efc00acd9fa614dbf68995a6b9947e3bd0f1a57f24a9eebcc33
     [jakob@manj MyRepo2]$
 
-*Second*
+**Second**
+
 After adding a remote origin using remote add, the URL paramter can be left out.
+
 This only pulls changes "commited" by using the snapshot function.
 
 .. code:: bash
@@ -635,7 +640,7 @@ And pull it on the slave:
 remote
 ~~~~~~
 
-Remote connection management.
+Remote connection management. Also similar to git's remote command.
 
 Example output when using orisync:
 
@@ -717,8 +722,9 @@ Proof it is still mounted:
     orifs on /home/schueler/DezSys/MyRepo type fuse.orifs (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
     orifs on /home/schueler/DezSys/NoRepo type fuse.orifs (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
 
-Therefore, before deleting a repo, one should unmount it first. For example by
-using the fusermount tool, which does not require root privileges.
+Therefore, before deleting a repo, one should unmount it first.
+
+For example by using the fusermount tool, which does not require root privileges.
 
 Example:
 
@@ -799,7 +805,7 @@ Troubles
 Time out of sync
 ~~~~~~~~~~~~~~~~
 
-Both host have to have the same time.
+Both hosts have to have the same time.
 To archive that the ntpd daemon should run.
 
 On a system with systemd ntpd can be enabled with this command:
@@ -811,8 +817,24 @@ On a system with systemd ntpd can be enabled with this command:
 The *STABLE* version does not work
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A new version called ori-orisyncng fixes some of the problems.
-It is available in the following git repo:
+As mentioned in the installation section, the latest stable version (0.8.1) has
+a bug which prevents orisync from working properly.
+
+The problem is that orisync did not do its work, aka. synchronizing the two
+repositories.
+
+We followed the steps exactly as described in the official paper and re-created
+each repository numerous times, but it did not change anything.
+
+So, when for example, creating a new directory, that directory is not created on
+the other side even after having waited for 1+ minute.
+
+This bug cost us about 3 hours of working time each.
+
+Fortunately, the latest developer version, called ori-orisyncng, fixes that
+problem.
+
+It is available in the following git repository:
 
 .. code:: text
 
