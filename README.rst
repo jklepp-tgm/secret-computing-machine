@@ -5,18 +5,60 @@ Distributed File Systems
 Task
 ====
 
+Installation und Implementierung
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+"Ori is a distributed file system built for offline operation and empowers the
+user with control over synchronization operations and conflict resolution. We
+provide history through light weight snapshots and allow users to verify the
+history has not been tampered with. Through the use of replication instances
+can be resilient and recover damaged data from other nodes." [1]_
+
+Installieren Sie Ori und testen Sie die oben beschriebenen Eckpunkte dieses
+verteilten Dateisystems (DFS). Verwenden Sie dabei auf jeden Fall alle
+Funktionalitäten der API von Ori um die Einsatzmöglichkeiten auszuschöpfen.
+Halten Sie sich dabei zuallererst an die Beispiele aus dem Paper im Kapitel 2
+[3]_.  Zeigen Sie mögliche Einsatzgebiete für Backups und Roadwarriors (z.B.
+Laptopbenutzer möchte Daten mit zwei oder mehreren Servern synchronisieren).
+Führen Sie auch die mitgelieferten Tests aus und kontrollieren Sie deren
+Ausgaben (Hilfestellung durch Wiki [2]_).
+
+Gegenüberstellung
+~~~~~~~~~~~~~~~~~
+
+Wo gibt es Überschneidungen zu anderen Implementierungen von DFS? Listen Sie
+diese auf und dokumentieren Sie mögliche Entscheidungsgrundlagen für mindestens
+zwei unterschiedliche Einsatzgebiete. Verwenden Sie dabei zumindest HDFS [4]_
+und GlusterFS [5]_ als Gegenspieler zu Ori. Weitere Implementierungen sind
+möglich aber nicht verpflichtend. Um aussagekräftige Vergleiche anstellen zu
+können, wäre es von Vorteil die anderen Systeme ebenfalls - zumindest
+oberflächlich - zu testen.
+
+Info
+~~~~
+
+Gruppengröße: 2 Mitglieder
+Gesamtpunkte: 16
+
+* Installation und Testdurchlauf von Ori: 2 Punkte
+* Einsatz/Dokumentation der Ori API (replicate, snapshot, checkout, graft,
+  filelog, list, log, merge, newfs, pull, remote, removefs, show, status,
+  tip, varlink): 8 Punkte
+* Gegenüberstellungstabelle: 4 Punkte
+* Einsatz der Gegenspieler: 2 Punkte
+
 Installation
 ============
 
 We first tried to get the latest stable version (0.8.1) working, but orisync did
 not work properly.
 
-For more information, see the troubles section below.
+For more information, see the troubles section at the end.
 
-After a forum post our teacher, Michael Borko, answered and told us to build ori
+After a forum post made by our teacher, Michael Borko, we built Ori
 from the Bitbucket repository directly/a developer build.
 
-Orisync worked after building ori executing the following steps:
+Orisync worked after building ori by executing the following steps:
 
 .. code:: bash
 
@@ -37,7 +79,7 @@ Orisync worked after building ori executing the following steps:
     cd ~/.ssh
     cat id_rsa.pub >> authorized_keys
 
-With that, the installation is now complete.
+With that, the installation is complete.
 
 Running the tests
 =================
@@ -95,7 +137,9 @@ This was the output of executing runtests.sh on our machine:
 Ori API
 =======
 
-Important: All commands (except orisync itself and pull/merge/checkout/remote)
+*Important*
+
+All commands (except orisync itself and pull/merge/checkout/remote)
 have been done after setting up orisync and the outputs of them are therefore
 not manually done.
 
@@ -258,19 +302,30 @@ Please note that orisync only looks for changes each 5 seconds.
     [jakob@manj 2014-2015]$ cd MyRepo/
     [jakob@manj MyRepo]$ ls
     MYDIR/  MYFILE
-    [jakob@manj MyRepo]$ ls
-    MYDIR/  MYFILE
     # This has been done before doing echo "HI" > MYFILE on the master
-    [jakob@manj MyRepo]$ less MYFILE 
+    [jakob@manj MyRepo]$ less MYFILE
+    # And this afterwards
     [jakob@manj MyRepo]$ cat MYFILE
     HI
 
 Orisync now watches, as mentioned, every 5 seconds for changes and performs a 
-pull each time something changes.
+pull on the client each time something has changed.
 
 Orisync is useful for people, who need to have the same files on multiple locations
 (like on your home computer and laptop) and do not want to use a external service.
 
+
+The replicate operation creates a new replica of a file
+system when given a path to a source replica (local or
+remote). It works by first creating and configuring an
+empty repository. Next, it retrieves the hash of latest
+commit from the source and saves it for later use. It
+then scans the source for all relevant objects and transfers
+them to the destination. The set of relevant objects
+depends on whether the new instance is a full replica
+(including history) or shallow replica. Finally, when the
+transfer is complete, the new file system head is set to
+point to the latest commit object that was transfered. [3]_
 
 snapshot
 ~~~~~~~~
@@ -312,9 +367,12 @@ Example:
 This command is useful for backing up data.
 
 All snapshots are saved in the repository under the .snapshots/SNAPSHOTNAME
-folder and can be used just like normal directories.
+folder and can be accssed just like normal directories.
 
-Example:
+Therefore, file recoveries are easily done (as long as your hard disk did not
+crash).
+
+Example for recovery:
 
 .. code:: bash
 
@@ -343,6 +401,7 @@ Example:
 
     [jakob@manj MyRepo2]$ ls
     [jakob@manj MyRepo2]$
+    # Pull here
     [jakob@manj MyRepo2]$ ori checkout
     714b922251dc9efc00acd9fa614dbf68995a6b9947e3bd0f1a57f24a9eebcc33
     Checkout success!
@@ -369,7 +428,7 @@ file contains all changes in another (a common question when files have been cop
 across file systems and edited in multiple places).
 " [3]_
 
-Example I:
+Example 1:
 
 FS 1 -> FS 2
 
@@ -527,6 +586,10 @@ pull
 ~~~~
 
 Pull changes from a repository.
+
+Pull updates an existing repository and transfers only missing data, but does
+not merge new changes into a mounted file system. (Note this operation is
+closer to git fetch than git pull.) [3]_
 
 This command can be used in two ways:
 
@@ -752,6 +815,101 @@ It is available in the following git repo:
 
     https://bitbucket.org/orifs/ori-orisyncng.git                                   
 
+
+Comparison
+==========
+
+Hadoop Distributed File System
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+HDFS is the primary distributed storage used by Hadoop applications. A HDFS
+cluster primarily consists of a NameNode that manages the file system metadata
+and DataNodes that store the actual data. The HDFS Architecture Guide describes
+HDFS in detail. This user guide primarily deals with the interaction of users
+and administrators with HDFS clusters. The HDFS architecture diagram depicts
+basic interactions among NameNode, the DataNodes, and the clients. Clients
+contact NameNode for file metadata or file modifications and perform actual
+file I/O directly with the DataNodes. [4]_
+
+GlusterFS
+~~~~~~~~~
+
+GlusterFS is an open source, distributed file system capable of scaling to
+several petabytes (actually, 72 brontobytes!) and handling thousands of
+clients. GlusterFS clusters together storage building blocks over Infiniband
+RDMA or TCP/IP interconnect, aggregating disk and memory resources and
+managing data in a single global namespace. GlusterFS is based on a stackable
+user space design and can deliver exceptional performance for diverse
+workloads. [5]_
+
+Table
+~~~~~
+
+======================== ===================== ===================== =============
+ -                       **Ori File System**   **HDFS**              **GlusterFS**
+======================== ===================== ===================== =============
+**Use case**             Replication; in       Big data;
+                         future bidirectional  write-one-read-many
+                         synchronization
+**Architecture**         Peer to Peer          master/slave [7]_
+**Replication Strategy** polling (every 5      Replicates created at
+                         seconds)              the time of writing
+                                               [6]_
+**Security**             Transmission via SSH; None [6]_
+**Consistency**          merkle tree
+======================== ===================== ===================== =============
+
+Sources
+=======
+
+.. _1:
+
+[1] Ori File System, Stanford Website,
+    online: http://ori.scs.stanford.edu/,
+    visited: 2015-03-02
+
+.. _2:
+
+[2] Ori File System, Bitbucket Wiki,
+    online: https://bitbucket.org/orifs/ori/wiki/Home,
+    visited: 2015-03-02
+
+.. _3:
+
+[3] Ali José Mashtizadeh, Andrea Bittau, Yifeng Frang Huang, David Mazières.
+    Replication, History, and Grafting in the Ori File System.
+    In Proceedings of the 24th Symposium on Operating Systems Principles,
+    November 2013. Paper.
+
+.. _4:
+
+[4] Apache Hadoop FileSystem,
+    http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html,
+    visited: 2015-03-19
+
+.. _5:
+
+[5] GlusterFS,
+    http://www.gluster.org/documentation/howto/HowTo/,
+    visited: 2015-03-19
+
+.. _6:
+
+[6] Large Scale Distributed File System Survey, Yuduo Zhou,
+    http://grids.ucs.indiana.edu/ptliupages/publications/Large%20Scale%20Distributed%20File%20System%20Survey.pdf,
+    visited: 2015-03-19
+
+.. _7:
+
+[7] Distributed File Systems: A Survey, L.Sudha Rani, K. Sudhakar, S.Vinay Kumar,
+    http://www.ijcsit.com/docs/Volume%205/vol5issue03/ijcsit20140503234.pdf,
+    visited: 2015-03-19
+
+.. _8:
+
+[8] orifs / ori / wiki / Home &mdash; Bitbucket,
+    https://bitbucket.org/orifs/ori/wiki/Home,
+    visited: 2015-03-19
 
 .. header::
 
