@@ -407,19 +407,24 @@ workloads. [5]_
 Table
 ~~~~~
 
-======================== ===================== ===================== =============
+======================== ===================== ===================== ========================
  -                       **Ori File System**   **HDFS**              **GlusterFS**
-======================== ===================== ===================== =============
-**Use case**             Replication; in       Big data;
+======================== ===================== ===================== ========================
+**Supported OS**         Linux, FreeBSD,       Linux,                Linux,
+                         Mac OS X              some other Unix,      Mac OS X,
+                         ,                     Java API on other     Windows
+                                               OS too
+**Use case**             Replication; in       Big data;             network-attached storage
                          future bidirectional  write-one-read-many
                          synchronization
-**Architecture**         Peer to Peer          master/slave [7]_
+**Architecture**         Peer to Peer          master/slave [7]_     master/slave
 **Replication Strategy** polling (every 5      Replicates created at
                          seconds)              the time of writing
                                                [6]_
-**Security**             Transmission via SSH; None [6]_
+**Security**             Transmission via SSH; None [6]_             None, don't expose the
+                                                                     server nodes [9]_
 **Consistency**          merkle tree
-======================== ===================== ===================== =============
+======================== ===================== ===================== ========================
 
 Sources
 =======
@@ -465,6 +470,12 @@ Sources
 
 [7] Distributed File Systems: A Survey, L.Sudha Rani, K. Sudhakar, S.Vinay Kumar,
     http://www.ijcsit.com/docs/Volume%205/vol5issue03/ijcsit20140503234.pdf,
+    visited: 2015-03-19
+
+.. _9:
+
+[9] Security concerns with glusterfs?
+    http://serverfault.com/questions/659677/security-concerns-with-glusterfs,
     visited: 2015-03-19
 
 .. header::
