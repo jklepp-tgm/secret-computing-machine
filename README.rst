@@ -2,6 +2,9 @@
 Distributed File Systems
 ########################
 
+.. image:: Rambutan_Fruit.jpg
+    :width: 100%
+
 Task
 ====
 
