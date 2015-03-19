@@ -2,6 +2,9 @@
 Distributed File Systems
 ########################
 
+.. image:: white.png
+    :width: 40%
+
 .. image:: Rambutan_Fruit.jpg
     :width: 100%
 
