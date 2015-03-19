@@ -378,6 +378,49 @@ hostname        manj
 machtype        unknown        
 
 
+Comparison
+==========
+
+Hadoop Distributed File System
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+HDFS is the primary distributed storage used by Hadoop applications. A HDFS
+cluster primarily consists of a NameNode that manages the file system metadata
+and DataNodes that store the actual data. The HDFS Architecture Guide describes
+HDFS in detail. This user guide primarily deals with the interaction of users
+and administrators with HDFS clusters. The HDFS architecture diagram depicts
+basic interactions among NameNode, the DataNodes, and the clients. Clients
+contact NameNode for file metadata or file modifications and perform actual
+file I/O directly with the DataNodes. [4]_
+
+GlusterFS
+~~~~~~~~~
+
+GlusterFS is an open source, distributed file system capable of scaling to
+several petabytes (actually, 72 brontobytes!) and handling thousands of
+clients. GlusterFS clusters together storage building blocks over Infiniband
+RDMA or TCP/IP interconnect, aggregating disk and memory resources and
+managing data in a single global namespace. GlusterFS is based on a stackable
+user space design and can deliver exceptional performance for diverse
+workloads. [5]_
+
+Table
+~~~~~
+
+======================== ===================== ===================== =============
+ -                       **Ori File System**   **HDFS**              **GlusterFS**
+======================== ===================== ===================== =============
+**Use case**             Replication; in       Big data;
+                         future bidirectional  write-one-read-many
+                         synchronization
+**Architecture**         Peer to Peer          master/slave [7]_
+**Replication Strategy** polling (every 5      Replicates created at
+                         seconds)              the time of writing
+                                               [6]_
+**Security**             Transmission via SSH; None [6]_
+**Consistency**          merkle tree
+======================== ===================== ===================== =============
+
 Sources
 =======
 
@@ -404,13 +447,25 @@ Sources
 
 [4] Apache Hadoop FileSystem,
     http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html,
-    visited: 2015-03-02
+    visited: 2015-03-19
 
 .. _5:
 
 [5] GlusterFS,
     http://www.gluster.org/documentation/howto/HowTo/,
-    visited: 2015-03-02
+    visited: 2015-03-19
+
+.. _6:
+
+[6] Large Scale Distributed File System Survey, Yuduo Zhou,
+    http://grids.ucs.indiana.edu/ptliupages/publications/Large%20Scale%20Distributed%20File%20System%20Survey.pdf,
+    visited: 2015-03-19
+
+.. _7:
+
+[7] Distributed File Systems: A Survey, L.Sudha Rani, K. Sudhakar, S.Vinay Kumar,
+    http://www.ijcsit.com/docs/Volume%205/vol5issue03/ijcsit20140503234.pdf,
+    visited: 2015-03-19
 
 .. header::
 
