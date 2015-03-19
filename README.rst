@@ -54,6 +54,18 @@ Ori API
 replicate
 ~~~~~~~~~
 
+The replicate operation creates a new replica of a file
+system when given a path to a source replica (local or
+remote). It works by first creating and configuring an
+empty repository. Next, it retrieves the hash of latest
+commit from the source and saves it for later use. It
+then scans the source for all relevant objects and transfers
+them to the destination. The set of relevant objects
+depends on whether the new instance is a full replica
+(including history) or shallow replica. Finally, when the
+transfer is complete, the new file system head is set to
+point to the latest commit object that was transfered. [3]_
+
 snapshot
 ~~~~~~~~
 
@@ -80,6 +92,10 @@ newfs
 
 pull
 ~~~~
+
+Pull updates an existing repository and transfers only missing data, but does
+not merge new changes into a mounted file system. (Note this operation is
+closer to git fetch than git pull.) [3]_
 
 remote
 ~~~~~~
