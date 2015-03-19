@@ -861,7 +861,7 @@ Table
                                                [6]_
 **Security**             Transmission via SSH; None [6]_             None, don't expose the
                                                                      server nodes [9]_
-**Consistency**          merkle tree
+**Consistency**          merkle tree           could not find any    could not find any
 ======================== ===================== ===================== ========================
 
 Sources
