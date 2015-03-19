@@ -867,19 +867,24 @@ workloads. [5]_
 Table
 ~~~~~
 
-======================== ===================== ===================== =============
+======================== ===================== ===================== ========================
  -                       **Ori File System**   **HDFS**              **GlusterFS**
-======================== ===================== ===================== =============
-**Use case**             Replication; in       Big data;
+======================== ===================== ===================== ========================
+**Supported OS**         Linux, FreeBSD,       Linux,                Linux,
+                         Mac OS X              some other Unix,      Mac OS X,
+                         ,                     Java API on other     Windows
+                                               OS too
+**Use case**             Replication; in       Big data;             network-attached storage
                          future bidirectional  write-one-read-many
                          synchronization
-**Architecture**         Peer to Peer          master/slave [7]_
+**Architecture**         Peer to Peer          master/slave [7]_     master/slave
 **Replication Strategy** polling (every 5      Replicates created at
                          seconds)              the time of writing
                                                [6]_
-**Security**             Transmission via SSH; None [6]_
-**Consistency**          merkle tree
-======================== ===================== ===================== =============
+**Security**             Transmission via SSH; None [6]_             None, don't expose the
+                                                                     server nodes [9]_
+**Consistency**          merkle tree           could not find any    could not find any
+======================== ===================== ===================== ========================
 
 Sources
 =======
@@ -931,6 +936,12 @@ Sources
 
 [8] orifs / ori / wiki / Home &mdash; Bitbucket,
     https://bitbucket.org/orifs/ori/wiki/Home,
+    visited: 2015-03-19
+
+.. _9:
+
+[9] Security concerns with glusterfs?
+    http://serverfault.com/questions/659677/security-concerns-with-glusterfs,
     visited: 2015-03-19
 
 .. header::
